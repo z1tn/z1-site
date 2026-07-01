@@ -133,9 +133,9 @@
       const cyan = Math.random() < 0.5;
       const roll = Math.random();
       let sz, base, hero = false;
-      if (roll < 0.045){ sz = 3.0 + Math.random()*2.0; base = 0.95; hero = true; }
-      else if (roll < 0.24){ sz = 1.8 + Math.random()*0.9; base = 0.75; }
-      else { sz = 1.1 + Math.random()*0.6; base = 0.60; }
+      if (roll < 0.03){ sz = 1.8 + Math.random()*1.4; base = 0.95; hero = true; }
+      else if (roll < 0.20){ sz = 1.3 + Math.random()*0.7; base = 0.72; }
+      else { sz = 0.9 + Math.random()*0.5; base = 0.58; }
       asteroids.push({ a, e, argp: Math.random()*6.2832,
         cI: Math.cos(inc), sI: Math.sin(inc), cN: Math.cos(node), sN: Math.sin(node),
         m0: Math.random()*6.2832, spd: 0.20*Math.pow(refR/a, 1.5),  // further = slower (real orbital physics)
@@ -227,10 +227,8 @@
       const X2 = X*k.cN - y1*k.sN, Y2 = X*k.sN + y1*k.cN;
       const sx = cx + X2, sy = cy + Y2*TILT - z1*COSZ;
       if (k.hero){
-        ctx.fillStyle = `hsla(${k.hue},95%,66%,${k.br*0.22})`;
-        ctx.beginPath(); ctx.arc(sx, sy, k.sz*3.2, 0, 6.2832); ctx.fill();
-        ctx.fillStyle = `hsla(${k.hue},96%,74%,${k.br})`;
-        ctx.beginPath(); ctx.arc(sx, sy, k.sz, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = `hsla(${k.hue},96%,72%,${k.br})`;
+        ctx.beginPath(); ctx.arc(sx, sy, k.sz*0.8, 0, 6.2832); ctx.fill();
       } else {
         ctx.fillStyle = `hsla(${k.hue},92%,63%,${k.br})`;
         ctx.fillRect(sx, sy, k.sz, k.sz);
