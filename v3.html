@@ -1,0 +1,322 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+<title>Z1 — Ventures by Sultan Al Noori</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root { --cyan:#5fd0e6; }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html,body { height:100%; overflow:hidden; background:#04050a; }
+  body { font-family:'Inter',-apple-system,sans-serif; color:#fff; }
+  #c { position:fixed; inset:0; display:block; }
+
+  .ui { position:fixed; inset:0; pointer-events:none; z-index:10; }
+  header { position:absolute; top:26px; left:28px; }
+  .eyebrow { font-family:'JetBrains Mono',monospace; font-size:12px; letter-spacing:.14em; color:var(--cyan); opacity:.9; }
+  .title { font-size:clamp(34px,7vw,56px); font-weight:700; letter-spacing:-.02em; line-height:1; margin-top:6px; }
+  .title b { color:#ff9d3c; }
+  .sub { margin-top:7px; font-size:13px; color:rgba(255,255,255,.55); letter-spacing:.01em; }
+  .pills { margin-top:16px; display:flex; flex-wrap:wrap; gap:8px; max-width:min(90vw,420px); }
+  .pill { font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.72);
+          padding:6px 12px; border-radius:999px; background:rgba(255,255,255,.045);
+          border:1px solid rgba(255,255,255,.12); backdrop-filter:blur(3px); }
+  .pill b { color:var(--cyan); font-weight:500; }
+  .hint { position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+          font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.12em;
+          text-transform:uppercase; color:rgba(255,255,255,.4); animation:floaty 2.8s ease-in-out infinite; }
+  @keyframes floaty { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(-5px);} }
+
+  /* modal */
+  #modal { position:fixed; inset:0; z-index:40; display:flex; align-items:center; justify-content:center;
+           opacity:0; pointer-events:none; transition:opacity .25s; }
+  #modal.show { opacity:1; pointer-events:auto; }
+  .backdrop { position:absolute; inset:0; background:rgba(3,4,10,.72); backdrop-filter:blur(4px); }
+  .card { position:relative; width:min(420px,88vw); border-radius:18px; padding:26px 26px 22px;
+          background:linear-gradient(180deg,rgba(20,24,42,.97),rgba(11,14,26,.98));
+          border:1px solid rgba(255,255,255,.10); box-shadow:0 30px 80px -20px #000;
+          transform:translateY(14px) scale(.97); transition:transform .28s cubic-bezier(.2,.9,.3,1.2); }
+  #modal.show .card { transform:translateY(0) scale(1); }
+  .card .x { position:absolute; top:12px; right:16px; background:none; border:0; color:rgba(255,255,255,.5);
+             font-size:26px; line-height:1; cursor:pointer; }
+  .card .x:hover { color:#fff; }
+  .ptag { display:flex; align-items:center; gap:10px; }
+  .swatch { width:13px; height:13px; border-radius:50%; }
+  .pname { font-size:21px; font-weight:700; letter-spacing:-.01em; }
+  .pstatus { display:inline-block; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:11px;
+             font-weight:500; letter-spacing:.04em; text-transform:uppercase; padding:4px 10px; border-radius:999px; }
+  .pdesc { margin-top:16px; font-size:14px; line-height:1.6; color:rgba(255,255,255,.8); }
+  .pfoot { margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08);
+           font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.42); }
+</style>
+</head>
+<body>
+  <canvas id="c"></canvas>
+
+  <div class="ui">
+    <header>
+      <div class="eyebrow">Z1 // VENTURE GROUP</div>
+      <div class="title">Z1</div>
+      <div class="sub">Ventures by Sultan Al Noori</div>
+      <div class="pills">
+        <span class="pill"><b>6</b> ventures</span>
+        <span class="pill"><b>3</b> live &middot; <b>3</b> building</span>
+        <span class="pill">Dubai &middot; UAE</span>
+      </div>
+    </header>
+    <div class="hint">&#9702; tap a planet to explore</div>
+  </div>
+
+  <div id="modal">
+    <div class="backdrop"></div>
+    <div class="card">
+      <button class="x" aria-label="Close">&times;</button>
+      <div class="ptag"><span class="swatch"></span><span class="pname"></span></div>
+      <div class="pstatus"></div>
+      <p class="pdesc"></p>
+      <div class="pfoot"></div>
+    </div>
+  </div>
+
+<script>
+  const VENTURES = [
+    { name:'Maali',        color:'#a8e06a', rf:0.20, spd:0.090, a0:0.4, status:'Building · Beta',
+      desc:'Personal finance, simplified — connect your UAE bank once and instantly see where your money goes, with automatic categories, budgets and clear insights.', foot:'Mobile app · UAE Open Banking' },
+    { name:'Algo Trading', color:'#8b7cf6', rf:0.26, spd:0.070, a0:2.1, status:'In development',
+      desc:'An automated trading system that turns live market signals into executed trades — with backtesting to prove every strategy before real capital.', foot:'Signals · execution · backtesting' },
+    { name:'Z1 Enterprise',color:'#e0a458', rf:0.32, spd:0.055, a0:3.7, status:'Live',
+      desc:'A general trading company — starting with Airsoft supplies and growing into a broader, higher-value product catalog.', foot:'General trading' },
+    { name:'xDigit',       color:'#5aa9e6', rf:0.37, spd:0.045, a0:5.2, status:'Concept',
+      desc:'A trusted, modern marketplace for buying and selling Dubai vehicle plate numbers — bringing an informal market online.', foot:'Marketplace' },
+    { name:'FARM2DOOR',    color:'#e6c84f', rf:0.42, spd:0.037, a0:1.2, status:'Operating',
+      desc:'Premium free-range eggs with reliable supply and a growing base of recurring customers across the UAE.', foot:'Food · direct-to-door' },
+    { name:'z1 Health',    color:'#f2668b', rf:0.47, spd:0.030, a0:4.5, status:'Early',
+      desc:'A personal health coach — daily calorie and step targets, home workouts, meal ideas and progress tracking to lose weight sustainably.', foot:'Personal health' },
+  ];
+
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d');
+  const modal = document.getElementById('modal');
+  const TILT = 0.42;   // sin(camera elevation): vertical squash of the ecliptic plane
+  const COSZ = 0.90;   // cos(camera elevation): how out-of-plane height maps to screen-Y
+
+  let W, H, dpr, cx, cy, minDim, sunR, dotR, off, stars = [], asteroids = [], planetPos = [];
+
+  function makeStars(){
+    stars = [];
+    const n = Math.round(Math.min(420, W * H / 2400));
+    for (let i = 0; i < n; i++){
+      const roll = Math.random();
+      let c;
+      if (roll < 0.44)      c = ['#4fd6f2','#63e2ff','#37c8e8'][(Math.random()*3)|0]; // cyan
+      else if (roll < 0.70) c = ['#ffffff','#dff2ff','#eaf6ff'][(Math.random()*3)|0]; // white
+      else                  c = ['#ff9a4d','#ffb469','#ff8636'][(Math.random()*3)|0]; // orange
+      stars.push({ x: Math.random()*W, y: Math.random()*H,
+        r: Math.random()*Math.random()*2.0 + 0.5, c,
+        ph: Math.random()*6.2832, sp: Math.random()*1.6 + 0.4 });
+    }
+  }
+
+  function makeAsteroids(){
+    asteroids = [];
+    const n = Math.round(Math.min(7800, W*H/62));
+    const refR = 0.3*minDim, maxD = Math.max(W, H), span = 0.90*maxD;
+    for (let i = 0; i < n; i++){
+      const a = 0.08*minDim + Math.pow(Math.random(), 0.75)*span;  // more objects further out
+      const rn = Math.min(1, a/span);
+      const distBr = Math.max(0.14, Math.pow(1 - rn*0.85, 1.6));    // brightness fades from the center
+      const inc = rn*(0.10 + Math.random()*0.60), node = Math.random()*6.2832; // inner flat/ordered, outer chaotic
+      const e = rn*Math.random()*0.55;
+      const cyan = Math.random() < 0.5;
+      const roll = Math.random();
+      let sz, base, hero = false;
+      if (roll < 0.03){ sz = 2.0 + Math.random()*1.6; base = 0.95; hero = true; }
+      else if (roll < 0.20){ sz = 1.5 + Math.random()*0.8; base = 0.72; }
+      else { sz = 1.1 + Math.random()*0.6; base = 0.58; }
+      asteroids.push({ a, e, argp: Math.random()*6.2832,
+        cI: Math.cos(inc), sI: Math.sin(inc), cN: Math.cos(node), sN: Math.sin(node),
+        m0: Math.random()*6.2832, spd: 0.20*Math.pow(refR/a, 1.5),  // further = slower (real orbital physics)
+        sz, br: base*distBr, hero, hue: cyan ? (188 + Math.random()*14) : (16 + Math.random()*22) });
+    }
+  }
+
+  function buildSwarm(){
+    off = document.createElement('canvas');
+    off.width = W*dpr; off.height = H*dpr;
+    const o = off.getContext('2d');
+    o.setTransform(dpr,0,0,dpr,0,0);
+    // warm central glow
+    const g = o.createRadialGradient(cx, cy, 0, cx, cy, minDim*0.95);
+    g.addColorStop(0, 'rgba(255,150,80,0.20)');
+    g.addColorStop(0.4, 'rgba(255,110,50,0.07)');
+    g.addColorStop(1, 'rgba(0,0,0,0)');
+    o.fillStyle = g; o.fillRect(0,0,W,H);
+    // glowing belt/ring in the ecliptic plane (the bright "wavy ring" of the reference)
+    o.globalCompositeOperation = 'lighter';
+    for (const R of [0.30, 0.44]){
+      const rr = R*minDim;
+      for (let L = 0; L < 5; L++){
+        o.beginPath();
+        o.ellipse(cx, cy, rr, rr*TILT, 0, 0, 6.2832);
+        o.strokeStyle = `rgba(255,150,80,${(0.05 - L*0.008).toFixed(3)})`;
+        o.lineWidth = 4 + L*11;
+        o.stroke();
+      }
+    }
+    // the swarm of orbit trails — fine, dense 3D weave that fills the frame
+    o.lineWidth = 0.5;
+    const N = Math.round(Math.min(7000, W*H/95));
+    const SEG = 60;
+    const maxD = Math.max(W, H);
+    for (let i = 0; i < N; i++){
+      const a = 0.08*minDim + Math.pow(Math.random(), 0.75)*0.90*maxD;
+      const rn = Math.min(1, a/(0.90*maxD));
+      const e = rn*Math.random()*0.55;
+      const argp = Math.random()*6.2832, inc = rn*(0.10 + Math.random()*0.60), node = Math.random()*6.2832;
+      const cI = Math.cos(inc), sI = Math.sin(inc), cN = Math.cos(node), sN = Math.sin(node);
+      const cyan = Math.random() < 0.40;
+      const hue = cyan ? (186 + Math.random()*16) : (14 + Math.random()*24);
+      const al = (0.03 + Math.random()*0.05) * Math.max(0.15, Math.pow(1 - rn*0.85, 1.4));
+      o.strokeStyle = `hsla(${hue},92%,60%,${al})`;
+      o.beginPath();
+      for (let s = 0; s <= SEG; s++){
+        const f = (s/SEG)*6.2832;
+        const r = a*(1-e*e)/(1+e*Math.cos(f));
+        const u = f + argp;
+        const X = r*Math.cos(u), Y = r*Math.sin(u);
+        const y1 = Y*cI, z1 = Y*sI;
+        const X2 = X*cN - y1*sN, Y2 = X*sN + y1*cN;
+        const sx = cx + X2, sy = cy + Y2*TILT - z1*COSZ;
+        if (s === 0) o.moveTo(sx, sy); else o.lineTo(sx, sy);
+      }
+      o.stroke();
+    }
+    o.globalCompositeOperation = 'source-over';
+  }
+
+  function resize(){
+    W = window.innerWidth; H = window.innerHeight;
+    dpr = Math.min(2, window.devicePixelRatio || 1);
+    canvas.width = W*dpr; canvas.height = H*dpr;
+    canvas.style.width = W+'px'; canvas.style.height = H+'px';
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+    cx = W/2; cy = H*0.55; minDim = Math.min(W,H);
+    sunR = Math.max(3, minDim*0.014); dotR = Math.max(2, minDim*0.0048);
+    makeStars(); makeAsteroids(); buildSwarm();
+  }
+  window.addEventListener('resize', resize);
+
+  function frame(t){
+    ctx.clearRect(0,0,W,H);
+    if (off) ctx.drawImage(off, 0, 0, W, H);
+
+    // stars — cyan/orange, glowing (halo + core, additive)
+    ctx.globalCompositeOperation = 'lighter';
+    for (const s of stars){
+      const a = 0.40 + 0.55*Math.abs(Math.sin(t*0.001*s.sp + s.ph));
+      ctx.fillStyle = s.c;
+      ctx.globalAlpha = a*0.26;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r*2.6, 0, 6.2832); ctx.fill();
+      ctx.globalAlpha = a;
+      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.2832); ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+
+    // asteroid swarm — thousands of moving objects (3D)
+    ctx.globalCompositeOperation = 'lighter';
+    for (const k of asteroids){
+      const m = k.m0 - (t/1000)*k.spd;
+      const f = m + 2*k.e*Math.sin(m);
+      const r = k.a*(1-k.e*k.e)/(1+k.e*Math.cos(f));
+      const u = f + k.argp;
+      const X = r*Math.cos(u), Y = r*Math.sin(u);
+      const y1 = Y*k.cI, z1 = Y*k.sI;
+      const X2 = X*k.cN - y1*k.sN, Y2 = X*k.sN + y1*k.cN;
+      const sx = cx + X2, sy = cy + Y2*TILT - z1*COSZ;
+      if (k.hero){
+        ctx.fillStyle = `hsla(${k.hue},96%,72%,${k.br})`;
+        ctx.beginPath(); ctx.arc(sx, sy, k.sz*0.8, 0, 6.2832); ctx.fill();
+      } else {
+        ctx.fillStyle = `hsla(${k.hue},92%,63%,${k.br})`;
+        ctx.fillRect(sx, sy, k.sz, k.sz);
+      }
+    }
+    ctx.globalCompositeOperation = 'source-over';
+
+    // planet orbit rings
+    for (const v of VENTURES){
+      const r = v.rf*minDim;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, r, r*TILT, 0, 0, 6.2832);
+      ctx.strokeStyle = 'rgba(255,255,255,0.09)'; ctx.lineWidth = 1; ctx.stroke();
+    }
+
+    // planets
+    planetPos = [];
+    for (const v of VENTURES){
+      const r = v.rf*minDim;
+      const ang = v.a0 - (t/1000)*v.spd;
+      const x = cx + Math.cos(ang)*r;
+      const y = cy + Math.sin(ang)*r*TILT;
+      ctx.globalCompositeOperation = 'lighter';
+      const g = ctx.createRadialGradient(x, y, 0, x, y, dotR*4);
+      g.addColorStop(0, v.color + 'cc'); g.addColorStop(1, v.color + '00');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, dotR*4, 0, 6.2832); ctx.fill();
+      ctx.globalCompositeOperation = 'source-over';
+      ctx.fillStyle = v.color; ctx.beginPath(); ctx.arc(x, y, dotR, 0, 6.2832); ctx.fill();
+      ctx.font = '400 10px "JetBrains Mono", monospace';
+      ctx.fillStyle = 'rgba(255,255,255,0.34)';
+      ctx.fillText(v.name, x + dotR + 6, y + 3);
+      planetPos.push({ v, x, y });
+    }
+
+    // sun
+    ctx.globalCompositeOperation = 'lighter';
+    const pr = sunR * (1 + 0.07*Math.sin(t*0.0022));
+    let halo = ctx.createRadialGradient(cx, cy, 0, cx, cy, pr*9);
+    halo.addColorStop(0, 'rgba(255,225,160,0.45)');
+    halo.addColorStop(0.18,'rgba(255,150,60,0.22)');
+    halo.addColorStop(1, 'rgba(255,90,40,0)');
+    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(cx, cy, pr*9, 0, 6.2832); ctx.fill();
+    let core = ctx.createRadialGradient(cx, cy, 0, cx, cy, pr*1.6);
+    core.addColorStop(0, '#ffffff'); core.addColorStop(0.5, '#ffe6b0'); core.addColorStop(1, 'rgba(255,170,80,0.15)');
+    ctx.fillStyle = core; ctx.beginPath(); ctx.arc(cx, cy, pr*1.6, 0, 6.2832); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+
+    requestAnimationFrame(frame);
+  }
+
+  // interaction
+  function openModal(v){
+    modal.querySelector('.swatch').style.background = v.color;
+    modal.querySelector('.swatch').style.boxShadow = '0 0 14px ' + v.color;
+    modal.querySelector('.pname').textContent = v.name;
+    const st = modal.querySelector('.pstatus');
+    st.textContent = v.status; st.style.color = v.color;
+    st.style.background = v.color + '22'; st.style.border = '1px solid ' + v.color + '55';
+    modal.querySelector('.pdesc').textContent = v.desc;
+    modal.querySelector('.pfoot').textContent = v.foot;
+    modal.classList.add('show');
+  }
+  function closeModal(){ modal.classList.remove('show'); }
+  modal.querySelector('.x').addEventListener('click', closeModal);
+  modal.querySelector('.backdrop').addEventListener('click', closeModal);
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  canvas.addEventListener('click', e => {
+    const rect = canvas.getBoundingClientRect();
+    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    let best = null, bd = 1e9;
+    for (const p of planetPos){ const d = Math.hypot(p.x-mx, p.y-my); if (d < bd){ bd = d; best = p; } }
+    if (best && bd < 34) openModal(best.v);
+  });
+
+  resize();
+  requestAnimationFrame(frame);
+</script>
+</body>
+</html>
