@@ -122,17 +122,21 @@
 
   function makeAsteroids(){
     asteroids = [];
-    const n = Math.round(Math.min(4200, W*H/115));
+    const n = Math.round(Math.min(6000, W*H/78));
     const refR = 0.3*minDim, maxD = Math.max(W, H);
     for (let i = 0; i < n; i++){
       const a = 0.08*minDim + Math.random()*0.85*maxD;
       const inc = Math.random()*1.3, node = Math.random()*6.2832;
-      const cyan = Math.random() < 0.45;
+      const cyan = Math.random() < 0.5;
+      const roll = Math.random();
+      let sz, br, hero = false;
+      if (roll < 0.045){ sz = 2.6 + Math.random()*1.6; br = 0.9 + Math.random()*0.25; hero = true; }
+      else if (roll < 0.24){ sz = 1.5 + Math.random()*0.9; br = 0.65 + Math.random()*0.3; }
+      else { sz = 0.9 + Math.random()*0.6; br = 0.5 + Math.random()*0.4; }
       asteroids.push({ a, e: Math.random()*0.55, argp: Math.random()*6.2832,
         cI: Math.cos(inc), sI: Math.sin(inc), cN: Math.cos(node), sN: Math.sin(node),
         m0: Math.random()*6.2832, spd: 0.20*Math.pow(refR/a, 1.5),
-        sz: Math.random() < 0.12 ? 1.7 : 1.0, br: 0.5 + Math.random()*0.5,
-        hue: cyan ? (186 + Math.random()*16) : (16 + Math.random()*22) });
+        sz, br, hero, hue: cyan ? (188 + Math.random()*14) : (16 + Math.random()*22) });
     }
   }
 
@@ -184,8 +188,8 @@
     canvas.width = W*dpr; canvas.height = H*dpr;
     canvas.style.width = W+'px'; canvas.style.height = H+'px';
     ctx.setTransform(dpr,0,0,dpr,0,0);
-    cx = W/2; cy = H*0.50; minDim = Math.min(W,H);
-    sunR = Math.max(3, minDim*0.014); dotR = Math.max(2.5, minDim*0.006);
+    cx = W/2; cy = H*0.55; minDim = Math.min(W,H);
+    sunR = Math.max(3, minDim*0.014); dotR = Math.max(2, minDim*0.0048);
     makeStars(); makeAsteroids(); buildSwarm();
   }
   window.addEventListener('resize', resize);
@@ -218,8 +222,15 @@
       const y1 = Y*k.cI, z1 = Y*k.sI;
       const X2 = X*k.cN - y1*k.sN, Y2 = X*k.sN + y1*k.cN;
       const sx = cx + X2, sy = cy + Y2*TILT - z1*COSZ;
-      ctx.fillStyle = `hsla(${k.hue},92%,63%,${k.br})`;
-      ctx.fillRect(sx, sy, k.sz, k.sz);
+      if (k.hero){
+        ctx.fillStyle = `hsla(${k.hue},95%,66%,${k.br*0.22})`;
+        ctx.beginPath(); ctx.arc(sx, sy, k.sz*3.2, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = `hsla(${k.hue},96%,74%,${k.br})`;
+        ctx.beginPath(); ctx.arc(sx, sy, k.sz, 0, 6.2832); ctx.fill();
+      } else {
+        ctx.fillStyle = `hsla(${k.hue},92%,63%,${k.br})`;
+        ctx.fillRect(sx, sy, k.sz, k.sz);
+      }
     }
     ctx.globalCompositeOperation = 'source-over';
 
