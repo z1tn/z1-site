@@ -122,20 +122,20 @@
 
   function makeAsteroids(){
     asteroids = [];
-    const n = Math.round(Math.min(7800, W*H/62));
+    const n = Math.round(Math.min(8500, W*H/58));
     const refR = 0.3*minDim, maxD = Math.max(W, H), span = 0.90*maxD;
     for (let i = 0; i < n; i++){
       const a = 0.08*minDim + Math.pow(Math.random(), 0.75)*span;  // more objects further out
       const rn = Math.min(1, a/span);
-      const distBr = Math.max(0.14, Math.pow(1 - rn*0.85, 1.6));    // brightness fades from the center
+      const distBr = Math.max(0.20, Math.pow(1 - rn*0.80, 1.5));    // brightness fades from the center
       const inc = rn*(0.10 + Math.random()*0.60), node = Math.random()*6.2832; // inner flat/ordered, outer chaotic
       const e = rn*Math.random()*0.55;
       const cyan = Math.random() < 0.5;
       const roll = Math.random();
       let sz, base, hero = false;
-      if (roll < 0.03){ sz = 2.0 + Math.random()*1.6; base = 0.95; hero = true; }
-      else if (roll < 0.20){ sz = 1.5 + Math.random()*0.8; base = 0.72; }
-      else { sz = 1.1 + Math.random()*0.6; base = 0.58; }
+      if (roll < 0.03){ sz = 2.2 + Math.random()*1.8; base = 1.0; hero = true; }
+      else if (roll < 0.22){ sz = 1.6 + Math.random()*0.9; base = 0.80; }
+      else { sz = 1.05 + Math.random()*0.6; base = 0.62; }
       asteroids.push({ a, e, argp: Math.random()*6.2832,
         cI: Math.cos(inc), sI: Math.sin(inc), cN: Math.cos(node), sN: Math.sin(node),
         m0: Math.random()*6.2832, spd: 0.20*Math.pow(refR/a, 1.5),  // further = slower (real orbital physics)
@@ -156,13 +156,13 @@
     o.fillStyle = g; o.fillRect(0,0,W,H);
     // glowing belt/ring in the ecliptic plane (the bright "wavy ring" of the reference)
     o.globalCompositeOperation = 'lighter';
-    for (const R of [0.30, 0.44]){
+    for (const R of [0.28, 0.40, 0.52]){
       const rr = R*minDim;
       for (let L = 0; L < 5; L++){
         o.beginPath();
         o.ellipse(cx, cy, rr, rr*TILT, 0, 0, 6.2832);
-        o.strokeStyle = `rgba(255,150,80,${(0.05 - L*0.008).toFixed(3)})`;
-        o.lineWidth = 4 + L*11;
+        o.strokeStyle = `rgba(255,140,70,${(0.085 - L*0.013).toFixed(3)})`;
+        o.lineWidth = 4 + L*12;
         o.stroke();
       }
     }
@@ -237,9 +237,9 @@
       const y1 = Y*k.cI, z1 = Y*k.sI;
       const X2 = X*k.cN - y1*k.sN, Y2 = X*k.sN + y1*k.cN;
       const sx = cx + X2, sy = cy + Y2*TILT - z1*COSZ;
-      if (k.hero){
-        ctx.fillStyle = `hsla(${k.hue},96%,72%,${k.br})`;
-        ctx.beginPath(); ctx.arc(sx, sy, k.sz*0.8, 0, 6.2832); ctx.fill();
+      if (k.sz >= 1.45){
+        ctx.fillStyle = `hsla(${k.hue},95%,${k.hero?74:65}%,${k.br})`;
+        ctx.beginPath(); ctx.arc(sx, sy, k.sz*0.7, 0, 6.2832); ctx.fill();
       } else {
         ctx.fillStyle = `hsla(${k.hue},92%,63%,${k.br})`;
         ctx.fillRect(sx, sy, k.sz, k.sz);
