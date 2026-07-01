@@ -59,12 +59,12 @@
   <div class="ui">
     <header>
       <div class="eyebrow">Z1 // VENTURE GROUP</div>
-      <div class="title">Z<b>1</b></div>
+      <div class="title">Z1</div>
       <div class="sub">Ventures by Sultan Al Noori</div>
       <div class="pills">
         <span class="pill"><b>6</b> ventures</span>
         <span class="pill"><b>3</b> live &middot; <b>3</b> building</span>
-        <span class="pill">Abu Dhabi &middot; UAE</span>
+        <span class="pill">Dubai &middot; UAE</span>
       </div>
     </header>
     <div class="hint">&#9702; tap a planet to explore</div>
@@ -125,10 +125,11 @@
     const refR = 0.3*minDim;
     for (let i = 0; i < n; i++){
       const a = (0.07 + Math.random()*0.60) * minDim;
+      const cyan = Math.random() < 0.45;
       asteroids.push({ a, e: Math.random()*0.5, rot: Math.random()*6.2832,
         m0: Math.random()*6.2832, spd: 0.22*Math.pow(refR/a, 1.5),
         sz: Math.random() < 0.14 ? 1.5 : 0.9, br: 0.35 + Math.random()*0.5,
-        hue: 16 + Math.random()*24 });
+        hue: cyan ? (186 + Math.random()*16) : (16 + Math.random()*24) });
     }
   }
 
