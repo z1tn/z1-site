@@ -6,7 +6,7 @@
 <title>Z1 — Ventures by Sultan Al Noori</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+Runic&display=swap" rel="stylesheet">
 <style>
   :root { --cyan:#5fd0e6; }
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -45,7 +45,7 @@
   .card .x:hover { color:#fff; }
   .ptag { display:flex; align-items:center; gap:10px; }
   .swatch { width:13px; height:13px; border-radius:50%; }
-  .pname { font-size:21px; font-weight:700; letter-spacing:-.01em; }
+  .pname { font-size:21px; font-weight:700; letter-spacing:-.01em; font-family:'Noto Sans Runic','Inter',sans-serif; }
   .pstatus { display:inline-block; margin-top:12px; font-family:'JetBrains Mono',monospace; font-size:11px;
              font-weight:500; letter-spacing:.04em; text-transform:uppercase; padding:4px 10px; border-radius:999px; }
   .pdesc { margin-top:16px; font-size:14px; line-height:1.6; color:rgba(255,255,255,.8); }
@@ -92,7 +92,7 @@
     border:1px solid rgba(255,255,255,.14); border-radius:12px; padding:11px 14px; width:210px;
     box-shadow:0 20px 50px -15px #000; }
   #hovercard.show { opacity:1; }
-  #hovercard .hname { font-size:14px; font-weight:700; letter-spacing:-.01em; }
+  #hovercard .hname { font-size:14px; font-weight:700; letter-spacing:-.01em; font-family:'Noto Sans Runic','Inter',sans-serif; }
   #hovercard .hstatus { font-family:'JetBrains Mono',monospace; font-size:10px; letter-spacing:.04em; text-transform:uppercase; margin-top:5px; }
   #hovercard .hfoot { font-size:11.5px; color:rgba(255,255,255,.62); margin-top:7px; line-height:1.4; }
 
@@ -161,17 +161,17 @@
   const STEALTH = 'Something is taking shape in the Z1 orbit — details are under wraps until it launches.';
   const UNDISCLOSED = '🔒 Undisclosed venture';
   const VENTURES = [
-    { name:'M***i',            color:'#a8e06a', rf:0.20, spd:0.090, a0:0.4, masked:true, status:'In stealth',
+    { name:'ᚦᚱᛟᚨᚲ',            color:'#a8e06a', rf:0.20, spd:0.090, a0:0.4, masked:true, status:'In stealth',
       desc:STEALTH, foot:UNDISCLOSED },
-    { name:'A**o T*****g',      color:'#8b7cf6', rf:0.26, spd:0.070, a0:2.1, masked:true, status:'In stealth',
+    { name:'ᚷᛁᚦᛟ ᛗᚨᛚᛞᚨ',      color:'#8b7cf6', rf:0.26, spd:0.070, a0:2.1, masked:true, status:'In stealth',
       desc:STEALTH, foot:UNDISCLOSED },
     { name:'Z1 Enterprise',    color:'#e0a458', rf:0.32, spd:0.055, a0:3.7, status:'Live',
       desc:'A general trading company — starting with Airsoft supplies and growing into a broader, higher-value product catalog.', foot:'General trading' },
-    { name:'x****t',           color:'#5aa9e6', rf:0.37, spd:0.045, a0:5.2, masked:true, status:'In stealth',
+    { name:'ᚱᛟᚦᛁᚲᛖ',           color:'#5aa9e6', rf:0.37, spd:0.045, a0:5.2, masked:true, status:'In stealth',
       desc:STEALTH, foot:UNDISCLOSED },
     { name:'FARM2DOOR',        color:'#e6c84f', rf:0.42, spd:0.037, a0:1.2, status:'Operating',
       desc:'Premium free-range eggs with reliable supply and a growing base of recurring customers across the UAE.', foot:'Food · direct-to-door' },
-    { name:'Z1 C*****d C****r', color:'#4aa3ff', rf:0.47, spd:0.030, a0:4.5, masked:true, status:'In stealth',
+    { name:'ᛉᛁ ᚦᚨᛚᛗ ᚲᛖᚾᛏ', color:'#4aa3ff', rf:0.47, spd:0.030, a0:4.5, masked:true, status:'In stealth',
       desc:STEALTH, foot:UNDISCLOSED },
   ];
 
@@ -346,7 +346,7 @@
       ctx.fillStyle = g; ctx.beginPath(); ctx.arc(x, y, dotR*4, 0, 6.2832); ctx.fill();
       ctx.globalCompositeOperation = 'source-over';
       ctx.fillStyle = v.color; ctx.beginPath(); ctx.arc(x, y, dotR, 0, 6.2832); ctx.fill();
-      ctx.font = '400 10px "JetBrains Mono", monospace';
+      ctx.font = "400 10px 'Noto Sans Runic', 'JetBrains Mono', monospace";
       ctx.fillStyle = 'rgba(255,255,255,0.34)';
       ctx.fillText(v.name, x + dotR + 6, y + 3);
       planetPos.push({ v, x, y });
