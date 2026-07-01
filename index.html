@@ -51,6 +51,40 @@
   .pdesc { margin-top:16px; font-size:14px; line-height:1.6; color:rgba(255,255,255,.8); }
   .pfoot { margin-top:18px; padding-top:14px; border-top:1px solid rgba(255,255,255,.08);
            font-family:'JetBrains Mono',monospace; font-size:12px; color:rgba(255,255,255,.42); }
+
+  /* contact */
+  .contact-btn { position:absolute; top:30px; right:30px; pointer-events:auto;
+    font-family:'JetBrains Mono',monospace; font-size:12.5px; color:rgba(255,255,255,.82);
+    padding:8px 16px; border-radius:999px; background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.18); cursor:pointer; backdrop-filter:blur(3px); letter-spacing:.04em; }
+  .contact-btn:hover { background:rgba(255,255,255,.12); color:#fff; }
+  .ui.hide { opacity:0; transition:opacity .5s; }
+  #c { transition:transform 1.1s cubic-bezier(.55,0,.3,1), filter 1.1s; }
+  #c.blurred { filter:blur(3px) brightness(.5); }
+  .cmodal { position:fixed; inset:0; z-index:60; display:flex; align-items:center; justify-content:center;
+    opacity:0; pointer-events:none; transition:opacity .5s; }
+  .cmodal.show { opacity:1; pointer-events:auto; }
+  .cbackdrop { position:absolute; inset:0; background:rgba(4,5,12,.5); }
+  .ccard { position:relative; width:min(460px,90vw); border-radius:20px; padding:30px 30px 26px;
+    background:linear-gradient(180deg,rgba(20,24,42,.97),rgba(10,13,26,.98));
+    border:1px solid rgba(255,255,255,.12); box-shadow:0 40px 100px -20px #000;
+    transform:translateY(16px) scale(.95); transition:transform .5s cubic-bezier(.2,.9,.3,1.2); }
+  .cmodal.show .ccard { transform:translateY(0) scale(1); }
+  .ccard h3 { font-size:22px; font-weight:700; letter-spacing:-.01em; }
+  .ccard .csub { font-family:'JetBrains Mono',monospace; font-size:12px; color:var(--cyan); margin-top:3px; letter-spacing:.04em; }
+  .ccard label { display:block; font-family:'JetBrains Mono',monospace; font-size:11px; letter-spacing:.05em;
+    text-transform:uppercase; color:rgba(255,255,255,.5); margin:15px 0 6px; }
+  .ccard input, .ccard textarea { width:100%; box-sizing:border-box; background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.14); border-radius:10px; padding:11px 13px; font-size:14px;
+    color:#fff; font-family:'Inter',sans-serif; outline:none; transition:border-color .2s; }
+  .ccard input:focus, .ccard textarea:focus { border-color:var(--cyan); }
+  .ccard textarea { resize:vertical; min-height:92px; }
+  .csend { margin-top:20px; width:100%; padding:13px; border:0; border-radius:10px;
+    background:var(--cyan); color:#04121a; font-size:14px; font-weight:700; cursor:pointer; font-family:'Inter',sans-serif; }
+  .csend:hover { filter:brightness(1.08); } .csend:disabled { opacity:.6; cursor:default; }
+  .cx { position:absolute; top:14px; right:18px; background:none; border:0; color:rgba(255,255,255,.5); font-size:26px; line-height:1; cursor:pointer; }
+  .cx:hover { color:#fff; }
+  .cmsg { margin-top:14px; font-size:13px; text-align:center; min-height:18px; }
 </style>
 </head>
 <body>
@@ -68,6 +102,7 @@
       </div>
     </header>
     <div class="hint">&#9702; tap a planet to explore</div>
+    <button class="contact-btn" id="contactBtn">Contact</button>
   </div>
 
   <div id="modal">
@@ -78,6 +113,25 @@
       <div class="pstatus"></div>
       <p class="pdesc"></p>
       <div class="pfoot"></div>
+    </div>
+  </div>
+
+  <div class="cmodal" id="cmodal">
+    <div class="cbackdrop"></div>
+    <div class="ccard">
+      <button class="cx" id="cClose" aria-label="Close">&times;</button>
+      <h3>Get in touch</h3>
+      <div class="csub">Z1 // let's talk</div>
+      <form id="cForm">
+        <label>Your email</label>
+        <input type="email" name="email" required placeholder="you@example.com" autocomplete="email">
+        <label>Subject</label>
+        <input type="text" name="subject" required placeholder="What's this about?">
+        <label>Message</label>
+        <textarea name="message" required placeholder="Your message..."></textarea>
+        <button type="submit" class="csend" id="cSend">Send message</button>
+        <div class="cmsg" id="cMsg"></div>
+      </form>
     </div>
   </div>
 
@@ -138,8 +192,8 @@
       else { sz = 1.05 + Math.random()*0.6; base = 0.62; }
       asteroids.push({ a, e, argp: Math.random()*6.2832,
         cI: Math.cos(inc), sI: Math.sin(inc), cN: Math.cos(node), sN: Math.sin(node),
-        m0: Math.random()*6.2832, spd: 0.20*Math.pow(refR/a, 1.5),  // further = slower (real orbital physics)
-        sz, br: base*distBr, hero, hue: cyan ? (188 + Math.random()*14) : (16 + Math.random()*22) });
+        m0: Math.random()*6.2832, spd: 0.10*Math.pow(refR/a, 1.5),  // further = slower (real orbital physics)
+        sz, br: base*distBr, hero, hue: cyan ? (188 + Math.random()*14) : (4 + Math.random()*16) });
     }
   }
 
@@ -150,19 +204,19 @@
     o.setTransform(dpr,0,0,dpr,0,0);
     // warm central glow
     const g = o.createRadialGradient(cx, cy, 0, cx, cy, minDim*0.95);
-    g.addColorStop(0, 'rgba(255,150,80,0.20)');
-    g.addColorStop(0.4, 'rgba(255,110,50,0.07)');
+    g.addColorStop(0, 'rgba(240,110,70,0.20)');
+    g.addColorStop(0.4, 'rgba(225,80,55,0.07)');
     g.addColorStop(1, 'rgba(0,0,0,0)');
     o.fillStyle = g; o.fillRect(0,0,W,H);
     // glowing belt/ring in the ecliptic plane (the bright "wavy ring" of the reference)
     o.globalCompositeOperation = 'lighter';
-    for (const R of [0.28, 0.40, 0.52]){
-      const rr = R*minDim;
-      for (let L = 0; L < 5; L++){
+    {
+      const rr = 0.40*minDim;
+      for (let L = 0; L < 8; L++){
         o.beginPath();
         o.ellipse(cx, cy, rr, rr*TILT, 0, 0, 6.2832);
-        o.strokeStyle = `rgba(255,140,70,${(0.085 - L*0.013).toFixed(3)})`;
-        o.lineWidth = 4 + L*12;
+        o.strokeStyle = `rgba(235,85,55,${(0.06 - L*0.006).toFixed(3)})`;
+        o.lineWidth = 6 + L*16;
         o.stroke();
       }
     }
@@ -178,7 +232,7 @@
       const argp = Math.random()*6.2832, inc = rn*(0.10 + Math.random()*0.60), node = Math.random()*6.2832;
       const cI = Math.cos(inc), sI = Math.sin(inc), cN = Math.cos(node), sN = Math.sin(node);
       const cyan = Math.random() < 0.40;
-      const hue = cyan ? (186 + Math.random()*16) : (14 + Math.random()*24);
+      const hue = cyan ? (186 + Math.random()*16) : (2 + Math.random()*18);
       const al = (0.03 + Math.random()*0.05) * Math.max(0.15, Math.pow(1 - rn*0.85, 1.4));
       o.strokeStyle = `hsla(${hue},92%,60%,${al})`;
       o.beginPath();
@@ -313,6 +367,45 @@
     let best = null, bd = 1e9;
     for (const p of planetPos){ const d = Math.hypot(p.x-mx, p.y-my); if (d < bd){ bd = d; best = p; } }
     if (best && bd < 34) openModal(best.v);
+  });
+
+  // ── Contact ─────────────────────────────────────────────
+  const cmodal = document.getElementById('cmodal');
+  const ui = document.querySelector('.ui');
+  function openContact(){
+    const p = planetPos[3] || planetPos[0];
+    if (p){ canvas.style.transformOrigin = p.x + 'px ' + p.y + 'px'; }
+    canvas.style.transform = 'scale(2.6)';
+    canvas.classList.add('blurred');
+    ui.classList.add('hide');
+    setTimeout(() => cmodal.classList.add('show'), 620);
+  }
+  function closeContact(){
+    cmodal.classList.remove('show');
+    canvas.style.transform = '';
+    canvas.classList.remove('blurred');
+    ui.classList.remove('hide');
+  }
+  document.getElementById('contactBtn').addEventListener('click', openContact);
+  document.getElementById('cClose').addEventListener('click', closeContact);
+  cmodal.querySelector('.cbackdrop').addEventListener('click', closeContact);
+  window.addEventListener('keydown', e => { if (e.key === 'Escape') closeContact(); });
+
+  const cForm = document.getElementById('cForm'), cMsg = document.getElementById('cMsg'), cSend = document.getElementById('cSend');
+  cForm.addEventListener('submit', async e => {
+    e.preventDefault();
+    cSend.disabled = true; cMsg.style.color = 'rgba(255,255,255,.6)'; cMsg.textContent = 'Sending…';
+    try {
+      const res = await fetch('https://formsubmit.co/ajax/sultan@z1.ae', {
+        method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+        body: JSON.stringify(Object.fromEntries(new FormData(cForm)))
+      });
+      if (!res.ok) throw new Error();
+      cMsg.style.color = '#7fe0a0'; cMsg.textContent = 'Message sent — thank you!';
+      cForm.reset();
+    } catch {
+      cMsg.style.color = '#f2668b'; cMsg.textContent = 'Could not send — please email sultan@z1.ae directly.';
+    } finally { cSend.disabled = false; }
   });
 
   resize();
