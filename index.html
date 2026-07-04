@@ -149,6 +149,8 @@
         <input type="text" name="subject" required placeholder="What's this about?">
         <label>Message</label>
         <textarea name="message" required placeholder="Your message..."></textarea>
+        <!-- honeypot: real people never fill this; bots do → we drop it -->
+        <input type="checkbox" name="botcheck" style="display:none" tabindex="-1" autocomplete="off">
         <button type="submit" class="csend" id="cSend">Send message</button>
         <div class="cmsg" id="cMsg"></div>
       </form>
@@ -452,11 +454,18 @@
     e.preventDefault();
     cSend.disabled = true; cMsg.style.color = 'rgba(255,255,255,.6)'; cMsg.textContent = 'Sending…';
     try {
-      const res = await fetch('https://formsubmit.co/ajax/sultan@z1.ae', {
+      const data = Object.fromEntries(new FormData(cForm));
+      const res = await fetch('https://api.web3forms.com/submit', {
         method: 'POST', headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
-        body: JSON.stringify(Object.fromEntries(new FormData(cForm)))
+        body: JSON.stringify({
+          access_key: '76d725a0-1ab3-4a8d-b77b-f7d6fa8379d6',
+          subject: 'New z1.ae contact: ' + (data.subject || '(no subject)'),
+          from_name: 'z1.ae contact form',
+          ...data
+        })
       });
-      if (!res.ok) throw new Error();
+      const json = await res.json();
+      if (!json.success) throw new Error();
       cMsg.style.color = '#7fe0a0'; cMsg.textContent = 'Message sent — thank you!';
       cForm.reset();
     } catch {
