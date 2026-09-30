@@ -29,7 +29,7 @@ test('Maali is revealed with approved copy and a safe new-tab title link', () =>
   assert.equal(maali.name, 'Maali');
   assert.equal(maali.masked, undefined);
   assert.equal(maali.status, 'In beta');
-  assert.equal(maali.desc, 'Every account. One clear view.');
+  assert.equal(maali.desc, 'One look. Every account.');
   context.openModal(maali);
   const name = modal.querySelector('.pname');
   assert.equal(name.tagName, 'a');
