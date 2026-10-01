@@ -43,6 +43,12 @@
   .card .x { position:absolute; top:12px; right:16px; background:none; border:0; color:rgba(255,255,255,.5);
              font-size:26px; line-height:1; cursor:pointer; }
   .card .x:hover { color:#fff; }
+  .card .x { z-index:2; }
+  .card a.pname { color:inherit; text-decoration:none; font-family:'Inter',sans-serif; }
+  .card a.pname::after { content:''; position:absolute; inset:0; border-radius:18px; }
+  .card a.pname:hover { text-decoration:underline; }
+  .card a.pname:focus-visible { outline:none; }
+  .card a.pname:focus-visible::after { outline:2px solid var(--cyan); outline-offset:4px; }
   .ptag { display:flex; align-items:center; gap:10px; }
   .swatch { width:13px; height:13px; border-radius:50%; }
   .pname { font-size:21px; font-weight:700; letter-spacing:-.01em; font-family:'Noto Sans Runic','Inter',sans-serif; }
@@ -159,12 +165,12 @@
 
 <script>
   // Masked ventures carry NO real name/description in the page source — only a
-  // partial hint + a generic stealth blurb. Live ones are shown in full.
+  // partial hint + a generic stealth blurb. Revealed ones are shown in full.
   const STEALTH = 'Something is taking shape in the Z1 orbit — details are under wraps until it launches.';
   const UNDISCLOSED = '🔒 Undisclosed venture';
   const VENTURES = [
-    { name:'Mᚨᚱᛁi',            color:'#a8e06a', rf:0.20, spd:0.090, a0:0.4, masked:true, status:'In stealth',
-      desc:STEALTH, foot:UNDISCLOSED },
+    { name:'Maali',            color:'#a8e06a', rf:0.20, spd:0.090, a0:0.4, status:'In beta',
+      desc:'One look. Every account.', foot:'maali.ae', url:'https://maali.ae' },
     { name:'Aᚱᛟo Tᛞᚨᚲᛁᚱg',      color:'#8b7cf6', rf:0.26, spd:0.070, a0:2.1, masked:true, status:'In stealth',
       desc:STEALTH, foot:UNDISCLOSED },
     { name:'Z1 Enterprise',    color:'#e0a458', rf:0.32, spd:0.055, a0:3.7, status:'Live',
@@ -374,7 +380,15 @@
   function openModal(v){
     modal.querySelector('.swatch').style.background = v.color;
     modal.querySelector('.swatch').style.boxShadow = '0 0 14px ' + v.color;
-    modal.querySelector('.pname').textContent = v.name;
+    const name = document.createElement(v.url ? 'a' : 'span');
+    name.className = 'pname';
+    name.textContent = v.name;
+    if (v.url){
+      name.href = v.url;
+      name.target = '_blank';
+      name.rel = 'noopener noreferrer';
+    }
+    modal.querySelector('.pname').replaceWith(name);
     const st = modal.querySelector('.pstatus');
     st.textContent = v.status; st.style.color = v.color;
     st.style.background = v.color + '22'; st.style.border = '1px solid ' + v.color + '55';
