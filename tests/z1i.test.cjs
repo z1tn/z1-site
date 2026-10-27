@@ -41,6 +41,16 @@ test('Z1 Incubator is on the orb with the ruled copy and no link (Sultan: "keep 
   assert.equal(modal.querySelector('.pfoot').textContent, 'Z1i - an invite-only challenge.');
 });
 
+test('the header pills count the orb: every venture, live = out in the world, the rest building', () => {
+  const { context } = setup();
+  const LIVE = new Set(['In beta', 'Live', 'Operating']);   // Maali, Z1 Enterprise, FARM2DOOR (command, Oct 27)
+  const live = context.ventures.filter(v => LIVE.has(v.status)).length;
+  const pills = [...html.matchAll(/<span class="pill">(.*?)<\/span>/g)].map(m => m[1]);
+  assert.equal(pills[0], `<b>${context.ventures.length}</b> ventures`);
+  assert.equal(pills[1], `<b>${live}</b> live &middot; <b>${context.ventures.length - live}</b> building`);
+  assert.equal(live, 3);
+});
+
 test('every orbit is its own ring, inside the outermost one the page already had', () => {
   const { context } = setup();
   const rf = context.ventures.map(v => v.rf);
